@@ -12,7 +12,7 @@ This guide covers running the **WordPress CF7 → n8n → Mock CRM Integration L
 
 ### 1. Clone & Configure
 ```bash
-git clone https://github.com/om192/portfolio-024-wordpress-cf7-n8n-lab.git
+git clone https://github.com/Jk-7bod7/portfolio-024-wordpress-cf7-n8n-lab.git
 cd portfolio-024-wordpress-cf7-n8n-lab
 cp .env.example .env
 ```
@@ -27,7 +27,7 @@ docker compose up -d --build
 docker compose ps
 ```
 Expected output:
-- `cf7_lab_wordpress`: Up (healthy) on `127.0.0.1:8080->80/tcp`
+- `cf7_lab_wordpress`: Up (healthy) on `127.0.0.1:8088->80/tcp` (or configured WP_PORT)
 - `cf7_lab_mariadb`: Up (healthy) on `3306/tcp`
 - `cf7_lab_n8n`: Up on `127.0.0.1:5678->5678/tcp`
 - `cf7_lab_crm`: Up (healthy) on `127.0.0.1:8000->8000/tcp`
