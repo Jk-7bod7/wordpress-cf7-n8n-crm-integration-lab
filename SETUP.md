@@ -1,6 +1,6 @@
-# Environment Setup & Deployment Runbook — PORTFOLIO-024
+# Environment Setup & Deployment Runbook — WordPress Contact Form 7 → n8n CRM Integration Lab
 
-This guide covers running the **WordPress CF7 → n8n → Mock CRM Integration Lab** via **Docker Compose** or via the **Local Host Runner**.
+This guide covers running the **WordPress CF7 → n8n CRM Integration Lab** via **Docker Compose** or via the **Local Host Runner**.
 
 ---
 
@@ -12,8 +12,8 @@ This guide covers running the **WordPress CF7 → n8n → Mock CRM Integration L
 
 ### 1. Clone & Configure
 ```bash
-git clone https://github.com/Jk-7bod7/portfolio-024-wordpress-cf7-n8n-lab.git
-cd portfolio-024-wordpress-cf7-n8n-lab
+git clone https://github.com/Jk-7bod7/wordpress-cf7-n8n-crm-integration-lab.git
+cd wordpress-cf7-n8n-crm-integration-lab
 cp .env.example .env
 ```
 

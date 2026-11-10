@@ -1,4 +1,4 @@
-# Security Policy & Threat Model — PORTFOLIO-024
+# Security Policy & Threat Model — WordPress Contact Form 7 → n8n CRM Integration Lab
 
 **Project:** WordPress Contact Form 7 → n8n → Mock CRM Integration Lab  
 **Classification:** Independent Local Technical Reference Implementation  

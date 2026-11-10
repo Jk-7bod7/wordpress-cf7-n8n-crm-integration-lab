@@ -1,4 +1,4 @@
-# WordPress Contact Form 7 → n8n → Mock CRM Integration Lab
+# WordPress Contact Form 7 → n8n CRM Integration Lab
 
 [![Project Classification: Independent Local Reference Implementation](https://img.shields.io/badge/Classification-Independent%20Reference%20Implementation-blue.svg)](#disclaimer--integrity-notice)
 [![Data: Synthetic Only](https://img.shields.io/badge/Data-Synthetic%20Only-green.svg)](#disclaimer--integrity-notice)
@@ -11,7 +11,7 @@
 
 > [!IMPORTANT]
 > **DISCLAIMER & INTEGRITY NOTICE:**  
-> This repository (**PORTFOLIO-024**) is an **independent local technical reference implementation** developed using exclusively **synthetic test data** and a **local mock CRM service backed by SQLite**. It is **NOT** paid client work, a commercial production deployment, or an integration with any proprietary production CRM platform. It serves as an open technical demonstration of resilient webhook intake, durable outbox buffering, idempotency gating, and local email sandbox verification.
+> This repository is an **independent local technical reference implementation** developed using exclusively **synthetic test data** and a **local mock CRM service backed by SQLite**. It is **NOT** paid client work, a commercial production deployment, or an integration with any proprietary production CRM platform. It serves as an open technical demonstration of resilient webhook intake, durable outbox buffering, idempotency gating, and local email sandbox verification.
 
 ---
 
@@ -19,7 +19,7 @@
 
 Web form integrations commonly suffer from silent delivery failures caused by unauthenticated mail transfer agents (`wp_mail`), external API rate limits, transient network partitions, or downstream CRM downtime.
 
-**PORTFOLIO-024** provides an end-to-end, fault-tolerant integration lab connecting **WordPress Contact Form 7** to **n8n** and an internal **FastAPI + SQLite Mock CRM**, with transactional email notifications safely captured inside a local **Mailpit** sandbox:
+This reference implementation provides an end-to-end, fault-tolerant integration lab connecting **WordPress Contact Form 7** to **n8n** and an internal **FastAPI + SQLite Mock CRM**, with transactional email notifications safely captured inside a local **Mailpit** sandbox:
 
 ```mermaid
 flowchart LR
@@ -172,8 +172,8 @@ To maintain technical accuracy and integrity, this reference implementation has 
 ### Launch with Docker Compose
 ```bash
 # 1. Clone the repository
-git clone https://github.com/Jk-7bod7/portfolio-024-wordpress-cf7-n8n-lab.git
-cd portfolio-024-wordpress-cf7-n8n-lab
+git clone https://github.com/Jk-7bod7/wordpress-cf7-n8n-crm-integration-lab.git
+cd wordpress-cf7-n8n-crm-integration-lab
 
 # 2. Configure environment (WP_PORT=8088 isolates against local port conflicts)
 cp .env.example .env

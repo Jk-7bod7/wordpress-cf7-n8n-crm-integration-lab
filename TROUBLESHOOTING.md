@@ -1,6 +1,6 @@
-# Troubleshooting Guide — PORTFOLIO-024
+# Troubleshooting Guide — WordPress Contact Form 7 → n8n CRM Integration Lab
 
-**Project:** WordPress Contact Form 7 → n8n → Mock CRM Integration Lab  
+**Project:** WordPress Contact Form 7 → n8n CRM Integration Lab  
 
 ---
 

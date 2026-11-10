@@ -1,4 +1,4 @@
-# System Architecture & Technical Specifications — PORTFOLIO-024
+# System Architecture & Technical Specifications — WordPress Contact Form 7 → n8n CRM Integration Lab
 
 **Project:** WordPress Contact Form 7 → n8n → Mock CRM Integration Lab  
 **Classification:** Independent Local Technical Reference Implementation  

@@ -1,4 +1,4 @@
-# Acceptance Testing & Verification Report — PORTFOLIO-024
+# Acceptance Testing & Verification Report — WordPress Contact Form 7 → n8n CRM Integration Lab
 
 **Test Suite:** `tests/test_portfolio_024.py`  
 **Execution Status:** **10 / 10 Tests PASS (100%)**  
