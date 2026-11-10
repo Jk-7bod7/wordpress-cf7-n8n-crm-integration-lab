@@ -4,8 +4,12 @@ from typing import List
 from fastapi import FastAPI, HTTPException, status, Response
 from fastapi.middleware.cors import CORSMiddleware
 
-from .models import LeadCreate, LeadResponse, HealthResponse
-from .database import init_db, insert_lead, get_leads, get_lead_by_id, count_leads
+try:
+    from .models import LeadCreate, LeadResponse, HealthResponse
+    from .database import init_db, insert_lead, get_leads, get_lead_by_id, count_leads
+except (ImportError, ValueError):
+    from models import LeadCreate, LeadResponse, HealthResponse
+    from database import init_db, insert_lead, get_leads, get_lead_by_id, count_leads
 
 # Configure safe logging without PII leakage
 logging.basicConfig(

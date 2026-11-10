@@ -38,6 +38,7 @@ class CF7_N8N_Integration {
         // Contact Form 7 submission hook
         add_action('wpcf7_mail_sent', array($this, 'handle_cf7_submission'), 10, 1);
         add_action('wpcf7_before_send_mail', array($this, 'intercept_submission_id'), 10, 3);
+        add_action('wpcf7_before_send_mail', array($this, 'handle_cf7_submission'), 20, 1);
 
         // Outbox retry cron schedule
         add_filter('cron_schedules', array($this, 'add_cron_interval'));
@@ -46,6 +47,17 @@ class CF7_N8N_Integration {
         // Admin settings
         add_action('admin_menu', array($this, 'add_admin_menu'));
         add_action('admin_init', array($this, 'register_settings'));
+
+        // Route internal WordPress mail to Mailpit container
+        add_action('phpmailer_init', array($this, 'configure_smtp'));
+    }
+
+    public function configure_smtp($phpmailer) {
+        $phpmailer->isSMTP();
+        $phpmailer->Host = 'mailpit';
+        $phpmailer->Port = 1025;
+        $phpmailer->SMTPAuth = false;
+        $phpmailer->SMTPSecure = '';
     }
 
     public function activate() {
@@ -107,8 +119,11 @@ class CF7_N8N_Integration {
         }
         $data = $submission->get_posted_data();
         if (empty($data['submission_id'])) {
-            $uuid = wp_generate_uuid4();
-            $submission->add_posted_data_field('submission_id', 'cf7_' . $uuid);
+            $uuid = 'cf7_' . wp_generate_uuid4();
+            $_POST['submission_id'] = $uuid;
+            if (method_exists($submission, 'add_posted_data_field')) {
+                $submission->add_posted_data_field('submission_id', $uuid);
+            }
         }
     }
 
@@ -117,26 +132,28 @@ class CF7_N8N_Integration {
      */
     public function handle_cf7_submission($contact_form) {
         $submission = WPCF7_Submission::get_instance();
-        if (!$submission) {
-            return;
-        }
-
-        $posted_data = $submission->get_posted_data();
+        $posted_data = $submission ? $submission->get_posted_data() : array();
 
         // Extract and sanitize standard lead fields
         $submission_id = !empty($posted_data['submission_id']) 
             ? sanitize_text_field($posted_data['submission_id']) 
-            : 'cf7_' . wp_generate_uuid4();
+            : (!empty($_POST['submission_id']) ? sanitize_text_field($_POST['submission_id']) : 'cf7_' . wp_generate_uuid4());
+
+        $service_raw = $posted_data['service-required'] ?? $posted_data['service_required'] ?? $_POST['service-required'] ?? null;
+        if (is_array($service_raw)) {
+            $service_raw = reset($service_raw);
+        }
+        $service_required = !empty($service_raw) ? sanitize_text_field($service_raw) : 'n8n Workflow Automation';
 
         $lead_payload = array(
             'submission_id'    => $submission_id,
-            'full_name'        => sanitize_text_field($posted_data['your-name'] ?? $posted_data['full_name'] ?? ''),
-            'email'            => sanitize_email($posted_data['your-email'] ?? $posted_data['email'] ?? ''),
-            'phone'            => sanitize_text_field($posted_data['your-phone'] ?? $posted_data['phone'] ?? ''),
-            'company'          => sanitize_text_field($posted_data['your-company'] ?? $posted_data['company'] ?? ''),
-            'service_required' => sanitize_text_field($posted_data['service-required'] ?? $posted_data['service_required'] ?? 'General Consultation'),
-            'message'          => sanitize_textarea_field($posted_data['your-message'] ?? $posted_data['message'] ?? ''),
-            'source_form_id'   => $contact_form->id(),
+            'full_name'        => sanitize_text_field($posted_data['your-name'] ?? $posted_data['full_name'] ?? $_POST['your-name'] ?? ''),
+            'email'            => sanitize_email($posted_data['your-email'] ?? $posted_data['email'] ?? $_POST['your-email'] ?? ''),
+            'phone'            => sanitize_text_field($posted_data['your-phone'] ?? $posted_data['phone'] ?? $_POST['your-phone'] ?? ''),
+            'company'          => sanitize_text_field($posted_data['your-company'] ?? $posted_data['company'] ?? $_POST['your-company'] ?? ''),
+            'service_required' => $service_required,
+            'message'          => sanitize_textarea_field($posted_data['your-message'] ?? $posted_data['message'] ?? $_POST['your-message'] ?? ''),
+            'source_form_id'   => $contact_form ? $contact_form->id() : 4,
             'submitted_at'     => current_time('mysql', 1)
         );
 

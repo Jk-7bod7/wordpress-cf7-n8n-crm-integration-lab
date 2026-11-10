@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # 1. WordPress CMS with Contact Form 7 Integration Plugin
   wordpress:
@@ -17,6 +15,7 @@ services:
     volumes:
       - wp_data:/var/www/html
       - ./wordpress/plugins/cf7-n8n-integration:/var/www/html/wp-content/plugins/cf7-n8n-integration:ro
+      - ./wordpress/plugins/contact-form-7:/var/www/html/wp-content/plugins/contact-form-7:ro
       - ./wordpress/themes/cf7-lab-theme:/var/www/html/wp-content/themes/cf7-lab-theme:ro
     depends_on:
       db:
@@ -58,10 +57,12 @@ services:
       - CRM_API_URL=http://mock-crm:8000
       - WEBHOOK_SECRET=${WEBHOOK_SECRET:-cf7_lab_secret_token_12345}
       - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY:-n8n_lab_encryption_key_2026}
+      - N8N_BLOCK_ENV_ACCESS_IN_NODE=false
       - GENERIC_TIMEZONE=UTC
     volumes:
       - n8n_data:/home/node/.n8n
       - ./n8n/workflow.json:/home/node/workflow.json:ro
+      - ./n8n/credentials.json:/home/node/credentials.json:ro
     depends_on:
       - mock-crm
       - mailpit
