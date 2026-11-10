@@ -36,10 +36,10 @@ Get-NetTCPConnection -LocalPort 8080, 5678, 8000, 8025, 1025 -State Listen | For
 ```
 
 ### Resolution:
-1. Identify the process ID (`OwningProcess`) holding the port.
+1. Identify the process ID (`OwningProcess`) holding the port. (Note: On Windows gaming machines, **Steam** (`steamwebhelper.exe`) frequently binds to `127.0.0.1:8080` for CEF remote debugging).
 2. Either terminate the conflicting process or change the host port mapping in `.env`:
    ```bash
-   WP_PORT=8081
+   WP_PORT=8088
    CRM_PORT=8001
    ```
 
