@@ -53,7 +53,7 @@ The integration lab is packaged with **Docker Compose**, pinning stable containe
 |---|---|---|---|
 | **`wordpress`** | `wordpress:6.6-php8.2-apache` | `127.0.0.1:8080` | Public demonstration landing page & CF7 lead capture form. |
 | **`db`** | `mariadb:11.4` | Internal (`3306`) | Relational database for WordPress and outbox queue tables. |
-| **`n8n`** | `n8nio/n8n:1.65.1` | `127.0.0.1:5678` | Workflow orchestration, auth check, schema validation, CRM dispatch. |
+| **`n8n`** | `n8nio/n8n:2.46.6` | `127.0.0.1:5678` | Workflow orchestration, auth check, schema validation, CRM dispatch. |
 | **`mock-crm`** | `FastAPI (Python 3.11)` | `127.0.0.1:8000` | Pydantic validation, SQLite persistence, idempotency verification. |
 | **`mailpit`** | `axllent/mailpit:v1.20` | `127.0.0.1:8025` (UI) / `:1025` (SMTP) | Local email capture sandbox and REST inspection API. |
 
