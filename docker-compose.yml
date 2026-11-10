@@ -1,0 +1,119 @@
+version: '3.8'
+
+services:
+  # 1. WordPress CMS with Contact Form 7 Integration Plugin
+  wordpress:
+    image: wordpress:6.6-php8.2-apache
+    container_name: cf7_lab_wordpress
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8080:80"
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_NAME: ${DB_NAME:-wordpress_db}
+      WORDPRESS_DB_USER: ${DB_USER:-wp_user}
+      WORDPRESS_DB_PASSWORD: ${DB_PASSWORD:-wp_secure_pass_2026}
+      WORDPRESS_TABLE_PREFIX: wp_
+    volumes:
+      - wp_data:/var/www/html
+      - ./wordpress/plugins/cf7-n8n-integration:/var/www/html/wp-content/plugins/cf7-n8n-integration:ro
+      - ./wordpress/themes/cf7-lab-theme:/var/www/html/wp-content/themes/cf7-lab-theme:ro
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - portfolio_net
+
+  # 2. MariaDB Database for WordPress
+  db:
+    image: mariadb:11.4
+    container_name: cf7_lab_mariadb
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root_secure_pass_2026}
+      MARIADB_DATABASE: ${DB_NAME:-wordpress_db}
+      MARIADB_USER: ${DB_USER:-wp_user}
+      MARIADB_PASSWORD: ${DB_PASSWORD:-wp_secure_pass_2026}
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - portfolio_net
+
+  # 3. n8n Workflow Automation Engine
+  n8n:
+    image: n8nio/n8n:1.65.1
+    container_name: cf7_lab_n8n
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:5678:5678"
+    environment:
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - WEBHOOK_URL=http://n8n:5678/
+      - CRM_API_URL=http://mock-crm:8000
+      - WEBHOOK_SECRET=${WEBHOOK_SECRET:-cf7_lab_secret_token_12345}
+      - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY:-n8n_lab_encryption_key_2026}
+      - GENERIC_TIMEZONE=UTC
+    volumes:
+      - n8n_data:/home/node/.n8n
+      - ./n8n/workflow.json:/home/node/workflow.json:ro
+    depends_on:
+      - mock-crm
+      - mailpit
+    networks:
+      - portfolio_net
+
+  # 4. Mock CRM API (FastAPI + SQLite)
+  mock-crm:
+    build:
+      context: ./crm
+      dockerfile: Dockerfile
+    image: portfolio024/mock-crm:1.0.0
+    container_name: cf7_lab_crm
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8000:8000"
+    environment:
+      - CRM_DATABASE_PATH=/app/data/crm_leads.sqlite3
+    volumes:
+      - crm_data:/app/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:8000/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    networks:
+      - portfolio_net
+
+  # 5. Mailpit Local Email Sandbox
+  mailpit:
+    image: axllent/mailpit:v1.20
+    container_name: cf7_lab_mailpit
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8025:8025" # Web UI & HTTP API
+      - "127.0.0.1:1025:1025" # SMTP Port
+    environment:
+      - MP_MAX_MESSAGES=500
+    networks:
+      - portfolio_net
+
+volumes:
+  wp_data:
+    name: cf7_lab_wp_data
+  db_data:
+    name: cf7_lab_db_data
+  n8n_data:
+    name: cf7_lab_n8n_data
+  crm_data:
+    name: cf7_lab_crm_data
+
+networks:
+  portfolio_net:
+    name: cf7_lab_network
+    driver: bridge

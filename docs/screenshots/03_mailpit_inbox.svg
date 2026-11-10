@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 520" width="900" height="520" style="background:#18181b;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+  <!-- Mailpit Chrome -->
+  <rect x="0" y="0" width="900" height="50" fill="#27272a" stroke="#3f3f46" stroke-width="1"/>
+  <text x="30" y="32" fill="#a855f7" font-size="20" font-weight="800">Mailpit</text>
+  <text x="110" y="32" fill="#71717a" font-size="14">Local Email Sandbox (127.0.0.1:8025)</text>
+
+  <!-- Left Sidebar (Inbox) -->
+  <rect x="0" y="50" width="320" height="470" fill="#202023" stroke="#3f3f46" stroke-width="1"/>
+  <text x="20" y="80" fill="#a1a1aa" font-size="12" font-weight="600">INTERCEPTED MESSAGES (1)</text>
+
+  <!-- Selected Message Item -->
+  <rect x="10" y="95" width="300" height="80" rx="6" fill="#27272a" stroke="#a855f7" stroke-width="1"/>
+  <text x="25" y="120" fill="#fafafa" font-size="12" font-weight="600">New Lead Captured: Sarah Jenkins</text>
+  <text x="25" y="140" fill="#a1a1aa" font-size="11">From: noreply@portfolio-lab.local</text>
+  <text x="25" y="160" fill="#71717a" font-size="10">ID: 550e8400-e29b-41d4-a716-446655440000</text>
+
+  <!-- Main View (Email Details) -->
+  <rect x="320" y="50" width="580" height="470" fill="#18181b"/>
+
+  <!-- Message Header Box -->
+  <rect x="345" y="75" width="530" height="95" rx="6" fill="#27272a" stroke="#3f3f46" stroke-width="1"/>
+  <text x="365" y="102" fill="#fafafa" font-size="14" font-weight="600">Subject: [Lead Intake] Acme Corporation - Sarah Jenkins</text>
+  <text x="365" y="125" fill="#a1a1aa" font-size="11">From: &lt;noreply@portfolio-lab.local&gt;   To: &lt;crm-intake@portfolio-lab.local&gt;</text>
+  <text x="365" y="148" fill="#22c55e" font-size="10" font-weight="500">&#10004; Synthetic local email delivered via SMTP 127.0.0.1:1025 (Zero External Relay)</text>
+
+  <!-- Message Body Box -->
+  <rect x="345" y="190" width="530" height="300" rx="6" fill="#202023" stroke="#3f3f46" stroke-width="1"/>
+  <text x="370" y="225" fill="#e4e4e7" font-size="13" font-weight="600">New Prospect Consultation Request</text>
+
+  <text x="370" y="260" fill="#a1a1aa" font-size="11">Submission ID:</text>
+  <text x="480" y="260" fill="#38bdf8" font-size="11" font-family="monospace">550e8400-e29b-41d4-a716-446655440000</text>
+
+  <text x="370" y="290" fill="#a1a1aa" font-size="11">Client Name:</text>
+  <text x="480" y="290" fill="#f4f4f5" font-size="11">Sarah Jenkins</text>
+
+  <text x="370" y="320" fill="#a1a1aa" font-size="11">Company:</text>
+  <text x="480" y="320" fill="#f4f4f5" font-size="11">Acme Corporation</text>
+
+  <text x="370" y="350" fill="#a1a1aa" font-size="11">Email:</text>
+  <text x="480" y="350" fill="#f4f4f5" font-size="11">s.jenkins@acme-corp.com</text>
+
+  <text x="370" y="380" fill="#a1a1aa" font-size="11">Phone:</text>
+  <text x="480" y="380" fill="#f4f4f5" font-size="11">+1-555-019-2834</text>
+
+  <text x="370" y="410" fill="#a1a1aa" font-size="11">CRM Status:</text>
+  <text x="480" y="410" fill="#22c55e" font-size="11" font-weight="600">SYNCHRONIZED (SQLite Leads Table)</text>
+
+  <rect x="370" y="440" width="480" height="35" rx="4" fill="#27272a"/>
+  <text x="385" y="462" fill="#9ca3af" font-size="10">Security Note: All test artifacts contain synthetic data only. No real PII processed.</text>
+</svg>

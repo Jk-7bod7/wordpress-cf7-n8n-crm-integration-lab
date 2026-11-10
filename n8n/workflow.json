@@ -1,0 +1,207 @@
+{
+  "name": "Contact Form 7 to Mock CRM Lead Intake Pipeline",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "cf7-intake",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "node-webhook",
+      "name": "CF7 Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        200,
+        300
+      ],
+      "webhookId": "cf7-intake-webhook"
+    },
+    {
+      "parameters": {
+        "jsCode": "\nconst headers = $input.first().json.headers || {};\nconst body = $input.first().json.body || {};\n\n// 1. Authenticate Webhook Secret\nconst expectedSecret = $env.WEBHOOK_SECRET || \"cf7_lab_secret_token_12345\";\nconst providedSecret = headers['x-webhook-secret'] || headers['X-Webhook-Secret'];\n\nif (!providedSecret || providedSecret !== expectedSecret) {\n    return [{\n        json: {\n            auth_ok: false,\n            status_code: 401,\n            error: \"Unauthorized: Invalid or missing X-Webhook-Secret header\"\n        }\n    }];\n}\n\n// 2. Validate Schema & Required Fields\nconst required = ['submission_id', 'full_name', 'email', 'service_required', 'message'];\nconst missing = [];\nfor (const field of required) {\n    if (!body[field] || String(body[field]).trim() === '') {\n        missing.push(field);\n    }\n}\n\nif (missing.length > 0) {\n    return [{\n        json: {\n            auth_ok: true,\n            valid_schema: false,\n            status_code: 400,\n            error: `Bad Request: Missing required field(s): ${missing.join(', ')}`\n        }\n    }];\n}\n\n// 3. Email Format Validation\nconst emailStr = String(body.email).trim().toLowerCase();\nconst emailRegex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;\nif (!emailRegex.test(emailStr)) {\n    return [{\n        json: {\n            auth_ok: true,\n            valid_schema: false,\n            status_code: 400,\n            error: \"Bad Request: Invalid email format\"\n        }\n    }];\n}\n\n// 4. Data Normalization\nconst normalized = {\n    submission_id: String(body.submission_id).trim(),\n    full_name: String(body.full_name).trim(),\n    email: emailStr,\n    phone: body.phone ? String(body.phone).trim() : null,\n    company: body.company ? String(body.company).trim() : null,\n    service_required: String(body.service_required).trim(),\n    message: String(body.message).trim(),\n    source_form_id: body.source_form_id || null,\n    received_at: new Date().toISOString()\n};\n\nreturn [{\n    json: {\n        auth_ok: true,\n        valid_schema: true,\n        status_code: 200,\n        lead: normalized\n    }\n}];\n"
+      },
+      "id": "node-auth-validation",
+      "name": "Auth & Schema Validation",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        420,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.auth_ok }}",
+              "value2": true
+            },
+            {
+              "value1": "={{ $json.valid_schema }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "node-if-valid",
+      "name": "Validation Passed?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        640,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ error: $json.error, timestamp: new Date().toISOString() }) }}",
+        "options": {
+          "responseCode": "={{ $json.status_code }}"
+        }
+      },
+      "id": "node-respond-error",
+      "name": "Respond Validation Error",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        860,
+        460
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ ($env.CRM_API_URL || 'http://mock-crm:8000') + '/api/leads' }}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.lead) }}",
+        "options": {
+          "timeout": 5000,
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "id": "node-crm-dispatch",
+      "name": "Mock CRM Dispatch",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        860,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "notifications@cf7-lab.local",
+        "toEmail": "leads@internal.local",
+        "subject": "=New Lead Captured: {{ $('Auth & Schema Validation').first().json.lead.full_name }}",
+        "text": "=A new lead was successfully ingested via Contact Form 7.\\n\\nName: {{ $('Auth & Schema Validation').first().json.lead.full_name }}\\nEmail: {{ $('Auth & Schema Validation').first().json.lead.email }}\\nCompany: {{ $('Auth & Schema Validation').first().json.lead.company || 'N/A' }}\\nService: {{ $('Auth & Schema Validation').first().json.lead.service_required }}\\nSubmission ID: {{ $('Auth & Schema Validation').first().json.lead.submission_id }}\\n\\nCRM ID: {{ $json.id }}\\nDuplicate Detected: {{ $json.is_duplicate ? 'YES' : 'NO' }}"
+      },
+      "id": "node-email-notification",
+      "name": "Send Mailpit Notification",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        1080,
+        240
+      ],
+      "credentials": {
+        "smtp": {
+          "id": "mailpit-smtp",
+          "name": "Mailpit Local SMTP"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ status: 'COMMITTED', lead_id: $('Mock CRM Dispatch').first().json.id, submission_id: $('Mock CRM Dispatch').first().json.submission_id, is_duplicate: $('Mock CRM Dispatch').first().json.is_duplicate || false, message: $('Mock CRM Dispatch').first().json.is_duplicate ? 'Existing lead recognized by CRM idempotency key' : 'New lead successfully created in CRM' }) }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "node-respond-success",
+      "name": "Respond Success",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1300,
+        240
+      ]
+    }
+  ],
+  "connections": {
+    "CF7 Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Auth & Schema Validation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Auth & Schema Validation": {
+      "main": [
+        [
+          {
+            "node": "Validation Passed?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validation Passed?": {
+      "main": [
+        [
+          {
+            "node": "Mock CRM Dispatch",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond Validation Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mock CRM Dispatch": {
+      "main": [
+        [
+          {
+            "node": "Send Mailpit Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Mailpit Notification": {
+      "main": [
+        [
+          {
+            "node": "Respond Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

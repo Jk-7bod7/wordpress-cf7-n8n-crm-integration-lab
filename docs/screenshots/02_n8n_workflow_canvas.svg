@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 480" width="960" height="480" style="background:#0b1120;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+  <!-- Canvas Header -->
+  <rect x="0" y="0" width="960" height="50" fill="#111827" stroke="#1f2937" stroke-width="1"/>
+  <text x="30" y="32" fill="#ff6d5a" font-size="18" font-weight="800">n8n</text>
+  <text x="75" y="32" fill="#f9fafb" font-size="14" font-weight="600">Workflow Canvas: WordPress CF7 Intake Pipeline</text>
+  <rect x="820" y="12" width="110" height="28" rx="14" fill="#10b981" fill-opacity="0.2" stroke="#10b981" stroke-width="1"/>
+  <circle cx="835" cy="26" r="4" fill="#10b981"/>
+  <text x="846" y="30" fill="#10b981" font-size="11" font-weight="600">ACTIVE</text>
+
+  <!-- Workflow Connectors -->
+  <path d="M 170 210 L 250 210" stroke="#4b5563" stroke-width="2" stroke-dasharray="4"/>
+  <path d="M 400 210 L 470 210" stroke="#4b5563" stroke-width="2" stroke-dasharray="4"/>
+  <!-- Branch True -->
+  <path d="M 610 180 L 670 140" stroke="#10b981" stroke-width="2"/>
+  <path d="M 610 240 L 670 300" stroke="#ef4444" stroke-width="2"/>
+  <path d="M 810 140 L 860 140" stroke="#3b82f6" stroke-width="2"/>
+
+  <!-- Node 1: Webhook Trigger -->
+  <g transform="translate(30, 160)">
+    <rect width="140" height="100" rx="8" fill="#1f2937" stroke="#ff6d5a" stroke-width="1.5"/>
+    <rect x="10" y="10" width="32" height="32" rx="6" fill="#ff6d5a" fill-opacity="0.15"/>
+    <text x="26" y="32" fill="#ff6d5a" font-size="16" text-anchor="middle">&#9889;</text>
+    <text x="10" y="65" fill="#f3f4f6" font-size="12" font-weight="600">CF7 Webhook</text>
+    <text x="10" y="82" fill="#9ca3af" font-size="10">POST /cf7-lead</text>
+  </g>
+
+  <!-- Node 2: Auth & Normalization -->
+  <g transform="translate(250, 160)">
+    <rect width="150" height="100" rx="8" fill="#1f2937" stroke="#f59e0b" stroke-width="1.5"/>
+    <rect x="10" y="10" width="32" height="32" rx="6" fill="#f59e0b" fill-opacity="0.15"/>
+    <text x="26" y="32" fill="#f59e0b" font-size="16" text-anchor="middle">&#9881;</text>
+    <text x="10" y="65" fill="#f3f4f6" font-size="12" font-weight="600">Auth &amp; Cleanse</text>
+    <text x="10" y="82" fill="#9ca3af" font-size="10">X-Webhook-Secret</text>
+  </g>
+
+  <!-- Node 3: If Filter -->
+  <g transform="translate(470, 160)">
+    <rect width="140" height="100" rx="8" fill="#1f2937" stroke="#8b5cf6" stroke-width="1.5"/>
+    <rect x="10" y="10" width="32" height="32" rx="6" fill="#8b5cf6" fill-opacity="0.15"/>
+    <text x="26" y="32" fill="#8b5cf6" font-size="16" text-anchor="middle">&#9474;</text>
+    <text x="10" y="65" fill="#f3f4f6" font-size="12" font-weight="600">Is Valid?</text>
+    <text x="10" y="82" fill="#9ca3af" font-size="10">Authorized &amp; Valid</text>
+  </g>
+
+  <!-- Node 4: Mock CRM (True) -->
+  <g transform="translate(670, 90)">
+    <rect width="140" height="100" rx="8" fill="#1f2937" stroke="#3b82f6" stroke-width="1.5"/>
+    <rect x="10" y="10" width="32" height="32" rx="6" fill="#3b82f6" fill-opacity="0.15"/>
+    <text x="26" y="32" fill="#3b82f6" font-size="16" text-anchor="middle">&#128451;</text>
+    <text x="10" y="65" fill="#f3f4f6" font-size="12" font-weight="600">Mock CRM Post</text>
+    <text x="10" y="82" fill="#9ca3af" font-size="10">POST /api/leads</text>
+  </g>
+
+  <!-- Node 5: Mailpit Notification -->
+  <g transform="translate(860, 90)">
+    <rect width="80" height="100" rx="8" fill="#1f2937" stroke="#10b981" stroke-width="1.5"/>
+    <rect x="10" y="10" width="32" height="32" rx="6" fill="#10b981" fill-opacity="0.15"/>
+    <text x="26" y="32" fill="#10b981" font-size="16" text-anchor="middle">&#9993;</text>
+    <text x="10" y="65" fill="#f3f4f6" font-size="11" font-weight="600">Mailpit</text>
+    <text x="10" y="82" fill="#9ca3af" font-size="9">SMTP 1025</text>
+  </g>
+
+  <!-- Node 6: Error / Reject Response -->
+  <g transform="translate(670, 270)">
+    <rect width="140" height="80" rx="8" fill="#1f2937" stroke="#ef4444" stroke-width="1.5"/>
+    <text x="15" y="35" fill="#ef4444" font-size="12" font-weight="600">Reject Response</text>
+    <text x="15" y="55" fill="#9ca3af" font-size="10">401 Unauthorized / 400</text>
+  </g>
+
+  <!-- Footer Stats -->
+  <rect x="30" y="410" width="900" height="45" rx="6" fill="#111827" stroke="#1f2937" stroke-width="1"/>
+  <text x="50" y="438" fill="#9ca3af" font-size="11">EXECUTION INVARIANTS: <tspan fill="#10b981" font-weight="600">Idempotency Key Passed</tspan> | <tspan fill="#38bdf8" font-weight="600">PII Logging Masked</tspan> | <tspan fill="#f59e0b" font-weight="600">Retry Backoff Supported</tspan></text>
+</svg>

@@ -1,0 +1,45 @@
+<!-- Contact Form 7 Form Definition for PORTFOLIO-024 Integration Lab -->
+<div class="cf7-integration-form">
+    <div class="form-row">
+        <label>Full Name *
+            [text* your-name class:form-control placeholder "Jane Doe"]
+        </label>
+    </div>
+
+    <div class="form-row">
+        <label>Work Email *
+            [email* your-email class:form-control placeholder "jane.doe@example.com"]
+        </label>
+    </div>
+
+    <div class="form-row">
+        <label>Phone Number
+            [tel your-phone class:form-control placeholder "+1 (555) 019-2834"]
+        </label>
+    </div>
+
+    <div class="form-row">
+        <label>Company Name
+            [text your-company class:form-control placeholder "Acme Enterprises"]
+        </label>
+    </div>
+
+    <div class="form-row">
+        <label>Service Required *
+            [select* service-required class:form-control "n8n Workflow Automation" "CRM & API Integration" "WordPress Form Hardening" "Custom Data Pipelines"]
+        </label>
+    </div>
+
+    <div class="form-row">
+        <label>Project Details / Message *
+            [textarea* your-message class:form-control placeholder "Briefly describe your integration requirements..."]
+        </label>
+    </div>
+
+    <!-- Hidden idempotency submission id -->
+    [hidden submission_id default:get]
+
+    <div class="form-submit">
+        [submit class:btn class:btn-primary "Submit Request → Forward to CRM"]
+    </div>
+</div>
